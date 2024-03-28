@@ -1,0 +1,12 @@
+# Namespaced config file
+main:
+    sampleFile: "samples.csv"
+    logPath: os.path.join(workflow.basedir, logs)
+tools:
+    guppy:
+        guppySimplex:
+            cudaString: cuda:all
+            chunksPerRunner: 512
+        guppyDuplex:
+            cudaString: cuda:all
+            chunksPerRunner: 400

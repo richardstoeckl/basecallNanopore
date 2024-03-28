@@ -1,0 +1,23 @@
+import pandas as pd
+import re
+import os
+import glob
+from pathlib import Path
+from snakemake.utils import validate
+from snakemake.utils import min_version
+
+########## check minimum snakemake version ##########
+min_version("8.5.0")
+
+########## load config and sample sheets ##########
+
+configfile: os.path.join(workflow.basedir, "../", "config", "config.yaml")
+sampleFile = os.path.join(workflow.basedir, "../", "config", config["main"]["sampleFile"])
+
+
+include: os.path.join(workflow.basedir, "rules", "preflight.smk")
+include: os.path.join(workflow.basedir, "rules", "basecall.smk")
+include: os.path.join(workflow.basedir, "rules", "qc.smk")
+
+rule all:
+    input:
