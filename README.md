@@ -3,7 +3,7 @@
 Author: richard.stoeckl@ur.de
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥8.5.0-brightgreen.svg)](https://snakemake.github.io)
-[![GitHub actions status](https://github.com/<owner>/<repo>/workflows/Tests/badge.svg?branch=main)](https://github.com/<owner>/<repo>/actions?query=branch%3Amain+workflow%3ATests)
+[![GitHub actions status](https://github.com/<owner>/<repo>/workflows/Tests/badge.svg?branch=main)](https://github.com/richardstoeckl/basecallNanopore/actions?query=branch%3Amain+workflow%3ATests)
 
 ## Usage
 1. Install [conda](https://docs.conda.io/en/latest/miniconda.html) (miniconda is fine).
