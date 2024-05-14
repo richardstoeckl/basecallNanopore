@@ -25,6 +25,10 @@ snakemake --use-conda --cores
 ```
 ---
 
+## TODO and planned features
+- unit tests
+- basecall qc (pycoqc? fastp?)
+- choose dorado duplex output (instead of fastq)
 
 ```
 Copyright Richard Stöckl 2024.
