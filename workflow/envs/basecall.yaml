@@ -1,0 +1,11 @@
+name: basecall
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - seqkit==2.8.1
+  - mappy==2.28
+  - pip:
+    - ont-fast5-api==4.1.3
+    - duplex_tools==0.3.3
+    - pod5==0.3.10

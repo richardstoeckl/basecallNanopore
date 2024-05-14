@@ -1,2 +1,6 @@
 .snakemake/*
 logs/*
+interim/*
+results/*
+dna*
+rna*

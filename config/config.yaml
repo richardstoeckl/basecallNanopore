@@ -1,12 +1,22 @@
 # Namespaced config file
 main:
     sampleFile: "samples.csv"
-    logPath: os.path.join(workflow.basedir, logs)
+    logPath: "logs"
+    interimPath: "path/to/interim"
+    resultPath: "path/to/final/results"
+
 tools:
     guppy:
+        guppyPath: "/usr/bin/guppy_basecaller"
         guppySimplex:
             cudaString: cuda:all
             chunksPerRunner: 512
         guppyDuplex:
             cudaString: cuda:all
             chunksPerRunner: 400
+    dorado:
+        doradoPath: "/path/to/dorado/dorado-0.5.3-linux-x64/bin/dorado"
+        doradoSimplex:
+            cudaString: cuda:all
+        doradoDuplex:
+            cudaString: cuda:all
