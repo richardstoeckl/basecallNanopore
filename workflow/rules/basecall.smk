@@ -77,7 +77,7 @@ checkpoint guppy_simplex:
 ## which reads are from the same molecule?
 rule pairsFromSummary:
     input:
-        summary=rules.guppy_simplex.output.summary,
+        summary=lambda wildcards: checkpoints.guppy_simplex.get(**wildcards).output[1],
     output:
         dir=directory(os.path.join(INTERIMPATH, "{run}", "pairsFromSummary")),
         ids=os.path.join(INTERIMPATH, "{run}", "pairsFromSummary", "pair_ids.txt"),
@@ -96,7 +96,7 @@ rule pairsFromSummary:
 rule filterPairs:
     input:
         ids=rules.pairsFromSummary.output.ids,
-        fastq=rules.guppy_simplex.output.dir,
+        fastq=lambda wildcards: checkpoints.guppy_simplex.get(**wildcards).output[0],
     output:
         filteredIds=os.path.join(
             INTERIMPATH, "{run}", "pairsFromSummary", "pair_ids_filtered.txt"
@@ -113,7 +113,7 @@ rule filterPairs:
 
 
 ## Duplex basecalling with Guppy
-rule guppy_duplex:
+checkpoint guppy_duplex:
     input:
         reads=lookup(
             query="runID == '{run}' & basecaller == 'guppy'",
@@ -136,51 +136,62 @@ rule guppy_duplex:
         os.path.join(LOGPATH, "{run}", "benchmarks", "guppy_duplex.tsv")
     params:
         guppyPath=os.path.normpath(config["tools"]["guppy"]["guppyPath"]),
-        config=str(
-            lookup(query="runID == '{run}'", within=runsDF, cols="basecallingModel")
-        )
-        + ".cfg",  # lambda w: runsDF.loc[w.sample, 'basecallingModel'],
-        barcodeKit=lambda w: runsDF.loc[w.sample, "barcodeKit"],
+        config=lambda w: runsDF.loc[w.run, 'basecallingModel'] + ".cfg",
+        barcodeKit=lambda w: runsDF.loc[w.run, "barcodeKit"],
         cudaString=config["tools"]["guppy"]["guppyDuplex"]["cudaString"],
         chunksPerRunner=config["tools"]["guppy"]["guppyDuplex"]["chunksPerRunner"],
     shell:
         """
         {params.guppyPath}_duplex \
-            --config {params.config} \
-            --device {params.cudaString} \
-            --chunks_per_runner {params.chunksPerRunner} \
-            -r --input_path {input.reads} \
-            --min_qscore 10 \
-            --compress_fastq \
-            --records_per_fastq 0 \
-            --duplex_pairing_mode from_pair_list \
-            --duplex_pairing_file {input.filteredIds} \
-            --barcode_kits {params.barcodeKit} \
-            --progress_stats_frequency 60 \
-            -s {output.dir} >>{log} 2>&1
+        --config {params.config} \
+        --device {params.cudaString} \
+        --chunks_per_runner {params.chunksPerRunner} \
+        -r --input_path {input.reads} \
+        --min_qscore 10 \
+        --compress_fastq \
+        --records_per_fastq 0 \
+        --duplex_pairing_mode from_pair_list \
+        --duplex_pairing_file {input.filteredIds} \
+        --barcode_kits {params.barcodeKit} \
+        --progress_stats_frequency 60 \
+        -s {output.dir} >>{log} 2>&1
         """
 
+## helper function to get the barcodes
+def get_guppyBarcodes(wildcards):
+    checkpoint_output = checkpoints.guppy_simplex.get(**wildcards).output[0]
+    return glob_wildcards(
+        os.path.join(checkpoint_output,"pass", "{barcode,[A-Za-z0-9]+}")
+    ).barcode
+
+rule collectGuppySimplex:
+    input:
+        lambda wildcards: os.path.join(checkpoints.guppy_simplex.get(**wildcards).output[0]),
+    output:
+        touch(os.path.join(INTERIMPATH, "basecalling", "{run}", "collectGuppySimplex.flag"))
+    
+rule collectGuppyDuplex:
+    input:
+        lambda wildcards: os.path.join(checkpoints.guppy_duplex.get(**wildcards).output[0]),
+    output:
+        touch(os.path.join(INTERIMPATH, "basecalling", "{run}", "collectGuppyDuplex.flag"))
 
 ## concatinate all of the fastqs per barcode into one file
 rule concatenateGuppy:
     input:
-        simplex=lambda wildcards: checkpoints.guppy_simplex.get(**wildcards).output[0]
-        + "/passed/"
-        + wildcards.barcode,
-        duplex=lambda wildcards: checkpoints.guppy_duplex.get(**wildcards).output[0]
-        + "/passed/"
-        + wildcards.barcode,
+        simplex=lambda wildcards: os.path.join(checkpoints.guppy_simplex.get(**wildcards).output[0],"pass", "{barcode}"),
+        duplex=lambda wildcards: os.path.join(checkpoints.guppy_duplex.get(**wildcards).output[0],"pass", "{barcode}"),
     output:
         simplex_concat=os.path.join(
-            INTERIMPATH, "{run}", "guppySimplex", "{barcode}_concatinated.fasta"
+            INTERIMPATH, "{run}", "guppySimplex", "{barcode}_concatinated.fastq.gz"
         ),
         duplex_concat=os.path.join(
-            INTERIMPATH, "{run}", "guppyDuplex", "{barcode}_concatinated.fasta"
+            INTERIMPATH, "{run}", "guppyDuplex", "{barcode}_concatinated.fastq.gz"
         ),
     shell:
         """
-        cat {input.simplex}/*.fasta > {output.simplex_concat}
-        cat {input.duplex}/*.fasta > {output.duplex_concat}
+        zcat -f {input.simplex}/*.fastq.gz | gzip - > {output.simplex_concat}
+        zcat -f {input.duplex}/*.fastq.gz | gzip - > {output.duplex_concat}
         """
 
 
@@ -193,39 +204,25 @@ rule joinGuppySimplexAndDuplex:
         duplex_concat=rules.concatenateGuppy.output.duplex_concat,
     output:
         final=os.path.join(
-            INTERIMPATH, "{run}", "guppy", "{barcode}_finalReads.fasta.gz"
+            INTERIMPATH, "{run}", "guppyFinal", "{barcode}_finalReads.fasta.gz"
         ),
+    params:
+        script=os.path.join(workflow.basedir, "scripts","joinGuppySimplexAndDuplex.sh")
     shell:
         # processes the pair_ids_filtered.txt file to put every read ID on its own line
         # read IDs from the paired_ids_filtered.txt, match them to sequence in simplex file, output every read that doesn't match
         # gzip the reads in memory and output them to a new file. This method avoids writing any temporary files to the disk.
         # see https://github.com/nanoporetech/duplex-tools/issues/25#issuecomment-1314782220
-        """
-        {{ awk '{{gsub(/ /,"\n"); print}}' {input.ids} | seqkit grep -v -f - {input.simplex_concat} ;  zcat -f {input.duplex_concat} ; }} | gzip - > {output.final}
-        """
-
-
-## helper function to get the barcodes
-def get_guppyBarcodes(wildcards):
-    return glob.glob(checkpoints.guppy_simplex.get(**wildcards).output[0] + "/passed/*")
-
+        "sh {params.script} {input.ids} {input.simplex_concat} {input.duplex_concat} {output.final}"
 
 ## collect all the final files for guppy basecalling for each barcode
 rule collectGuppy:
     input:
-        expand(
-            os.path.join(
-                INTERIMPATH, "{run}", "guppy", "{barcode}_finalReads.fasta.gz"
-            ),
-            barcode=get_guppyBarcodes,
-            run=get_guppyRuns,
-        ),
+        expand(rules.joinGuppySimplexAndDuplex.output.final,barcode=get_guppyBarcodes,run=get_guppyRuns),
+        expand(rules.collectGuppySimplex.output,run=get_guppyRuns),
+        expand(rules.collectGuppyDuplex.output,run=get_guppyRuns),
     output:
-        os.path.join(INTERIMPATH, "basecalling", "{run}", "collectGuppy.flag"),
-    shell:
-        """
-        echo "All barcodes processed" > {output}
-        """
+        touch(os.path.join(INTERIMPATH, "basecalling", "{run}", "collectGuppy.flag")),
 
 
 # this is the Dorado pathway
@@ -313,15 +310,14 @@ def get_doradoBarcodes(wildcards):
 
 
 ## basecall with dorado in duplex mode for each of the barcodes seperately
-checkpoint dorado_duplex:
+rule dorado_duplex:
     input:
         indir=lookup(
             query="runID == '{run}' & basecaller == 'dorado'",
             within=runsDF,
             cols="pathToRawData",
         ),
-        readIDs=lambda w: checkpoints.getReadIDsPerBarcode.get(**w).output[0]
-        + "/{barcode}_readIDs.txt",
+        readIDs=lambda w: checkpoints.getReadIDsPerBarcode.get(**w).output[0] + "/{barcode}_readIDs.txt",
     output:
         fastq=os.path.join(
             INTERIMPATH, "{run}", "doradoDuplex", "{barcode}_duplex.fastq"
@@ -344,15 +340,13 @@ checkpoint dorado_duplex:
         {input.indir} > {output.fastq} 2> {log}
         """
 
+def aggregate_input_collect_dorado(wildcards):
+    return expand(rules.dorado_duplex.output.fastq, barcode=get_doradoBarcodes(wildcards), run=get_doradoRuns(wildcards))
 
 ## flag to colelct all dorado outputs
 rule collectDorado:
     input:
-        dorado=collect(
-            rules.dorado_duplex.output.fastq,
-            run=get_doradoRuns,
-            barcode=get_doradoBarcodes,
-        ),
+        aggregate_input_collect_dorado,
     output:
         flag=touch(
             os.path.join(INTERIMPATH, "basecalling", "{run}", "collectDorado.flag")

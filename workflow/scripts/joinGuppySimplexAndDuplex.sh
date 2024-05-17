@@ -1,0 +1,1 @@
+{ awk '{gsub(/ /,"\n"); print}' "$1" | seqkit grep -v -f - "$2" ;  zcat "$3" ; } | gzip - > "$4"
