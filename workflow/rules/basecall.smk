@@ -168,13 +168,13 @@ rule collectGuppySimplex:
     input:
         lambda wildcards: os.path.join(checkpoints.guppy_simplex.get(**wildcards).output[0]),
     output:
-        touch(os.path.join(INTERIMPATH, "basecalling", "{run}", "collectGuppySimplex.flag"))
+        touch(os.path.join(INTERIMPATH, "flags", "{run}", "collectGuppySimplex.flag"))
     
 rule collectGuppyDuplex:
     input:
         lambda wildcards: os.path.join(checkpoints.guppy_duplex.get(**wildcards).output[0]),
     output:
-        touch(os.path.join(INTERIMPATH, "basecalling", "{run}", "collectGuppyDuplex.flag"))
+        touch(os.path.join(INTERIMPATH, "flags", "{run}", "collectGuppyDuplex.flag"))
 
 ## concatinate all of the fastqs per barcode into one file
 rule concatenateGuppy:
@@ -204,7 +204,7 @@ rule joinGuppySimplexAndDuplex:
         duplex_concat=rules.concatenateGuppy.output.duplex_concat,
     output:
         final=os.path.join(
-            INTERIMPATH, "{run}", "guppyFinal", "{barcode}_finalReads.fasta.gz"
+            RESULTPATH, "{run}", "guppy", "{barcode}_finalReads.fasta.gz"
         ),
     params:
         script=os.path.join(workflow.basedir, "scripts","joinGuppySimplexAndDuplex.sh")
@@ -222,7 +222,7 @@ rule collectGuppy:
         expand(rules.collectGuppySimplex.output,run=get_guppyRuns),
         expand(rules.collectGuppyDuplex.output,run=get_guppyRuns),
     output:
-        touch(os.path.join(INTERIMPATH, "basecalling", "{run}", "collectGuppy.flag")),
+        touch(os.path.join(INTERIMPATH, "flags", "{run}", "collectGuppy.flag")),
 
 
 # this is the Dorado pathway
@@ -320,7 +320,7 @@ rule dorado_duplex:
         readIDs=lambda w: checkpoints.getReadIDsPerBarcode.get(**w).output[0] + "/{barcode}_readIDs.txt",
     output:
         fastq=os.path.join(
-            INTERIMPATH, "{run}", "doradoDuplex", "{barcode}_duplex.fastq"
+            RESULTPATH, "{run}", "dorado", "{barcode}_duplex.fastq"
         ),
     log:
         os.path.join(LOGPATH, "{run}", "logs", "{barcode}_doradoDuplex.log"),
@@ -349,7 +349,7 @@ rule collectDorado:
         aggregate_input_collect_dorado,
     output:
         flag=touch(
-            os.path.join(INTERIMPATH, "basecalling", "{run}", "collectDorado.flag")
+            os.path.join(INTERIMPATH, "flags", "{run}", "collectDorado.flag")
         ),
 
 
@@ -359,4 +359,4 @@ rule collectAll:
         guppy=collect(rules.collectGuppy.output, run=get_guppyRuns),
         dorado=collect(rules.collectDorado.output, run=get_doradoRuns),
     output:
-        flag=touch(os.path.join(INTERIMPATH, "basecalling", "{run}", "collectAll.flag")),
+        flag=touch(os.path.join(INTERIMPATH, "flags", "{run}", "collectAll.flag")),
