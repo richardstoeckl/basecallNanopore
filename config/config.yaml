@@ -1,6 +1,6 @@
 # Namespaced config file
 main:
-    sampleFile: "samples.csv"
+    sampleFile: "config/runs_tests.csv" # "config/runs_tests.csv is the sample file that can be used for testing the pipeline setup"
     logPath: "logs"
     interimPath: "path/to/interim"
     resultPath: "path/to/final/results"
