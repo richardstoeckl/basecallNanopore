@@ -11,7 +11,24 @@ This [Snakemake](https://snakemake.github.io) workflow simplifies the basecallin
 
 Currently, neither Guppy nor Dorado can do this in one simple step/command, so this is why I set up this workflow. Regardless of how many barcodes were used, this workflow will automatically adjust itself to produce the output.
 
+## Workflow
 
+Depending on what basecaller is specified in the `runs.csv` file, the data is either going through the Guppy or Dorado pipeline.
+
+### Guppy
+For Guppy, the following pipeline based on [best practices from Nanopore](https://community.nanoporetech.com/docs/prepare/library_prep_protocols/Guppy-protocol/v/gpb_2003_v1_revax_14dec2018/duplex-basecalling) and [members of the community](https://github.com/nanoporetech/duplex-tools/issues/25#issuecomment-1314782220) is used:
+
+1. Basecall with Guppy in simplex mode with demultiplexing
+2. Use [duplex_tools](https://github.com/nanoporetech/duplex-tools) `pairs_from_summary` to generate candidate read pairs
+3. Use [duplex_tools](https://github.com/nanoporetech/duplex-tools) `filter_pairs` to check for similarity
+4. Use the filtered pairs to basecall using Guppy in duplex mode and demultiplexing
+
+### Dorado
+For Dorado, a pipeline based on [recommendations from Nanopore](https://github.com/nanoporetech/dorado/issues/600#issuecomment-1915188395) is used:
+
+1. Basecall with Dorado in simplex mode with demultiplexing enabled
+2. Extract a list of ReadIDs for each barcode
+3. Basecall using Dorado in duplex mode but constrain to the reads for each barcode seperately
 
 ## Usage
 1. Install [conda](https://docs.conda.io/en/latest/miniconda.html) (mamba or miniconda is fine).
@@ -37,6 +54,7 @@ snakemake --use-conda --cores
 ## TODO and planned features
 - basecall qc (pycoqc? fastp?)
 - choose dorado duplex output (instead of fastq)
+- somehow automate Dorado installation?
 
 ```
 Copyright Richard Stöckl 2024.
