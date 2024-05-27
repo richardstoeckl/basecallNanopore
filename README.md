@@ -3,7 +3,6 @@
 Author: richard.stoeckl@ur.de
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥8.10.0-brightgreen.svg)](https://snakemake.github.io)
-[![GitHub actions status](https://github.com/basecallNanopore/basecallNanopore/workflows/Tests/badge.svg?branch=main)](https://github.com/richardstoeckl/basecallNanopore/actions?query=branch%3Amain+workflow%3ATests)
 
 ## About
 
@@ -31,6 +30,10 @@ For Dorado, a pipeline based on [recommendations from Nanopore](https://github.c
 3. Basecall using Dorado in duplex mode but constrain to the reads for each barcode seperately
 
 ## Usage
+
+**[Check out the usage instructions in the snakemake workflow catalog](https://snakemake.github.io/snakemake-workflow-catalog?usage=richardstoeckl/basecallNanopore)**
+
+But here is a rough overview:
 1. Install [conda](https://docs.conda.io/en/latest/miniconda.html) (mamba or miniconda is fine).
 2. Install snakemake with:
 ```bash
