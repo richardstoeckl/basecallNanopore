@@ -1,0 +1,46 @@
+2024-05-27 11:48:04.199544 [guppy/message] ONT Guppy duplex basecalling software version 6.5.7+ca6d6af, minimap2 version 2.24-r1122
+config file:        /opt/ont/guppy/data/dna_r10.4.1_e8.2_400bps_5khz_hac.cfg
+model file:         /opt/ont/guppy/data/template_r10.4.1_e8.2_400bps_5khz_hac.jsn
+input path:         .tests/integration/fast5
+save path:          interim/fast5_guppy/guppyDuplex
+chunk size:         2000
+chunks per runner:  400
+minimum qscore:     10
+records per file:   0
+fastq compression:  ON
+num basecallers:    4
+gpu device:         cuda:all
+kernel path:        
+runners per device: 4
+
+Use of this software is permitted solely under the terms of the end user license agreement (EULA).
+By running, copying or accessing this software, you are demonstrating your acceptance of the EULA.
+The EULA may be found in /opt/ont/guppy/bin
+
+2024-05-27 11:48:04.199962 [guppy/info] crashpad_handler not supported on this platform.
+2024-05-27 11:48:04.297910 [guppy/info] CUDA device 0 (compute 8.6) initialised, memory limit 21156200448B (20562771968B free)
+2024-05-27 11:48:04.342802 [guppy/info] CUDA device 1 (compute 8.6) initialised, memory limit 16891248640B (16706568192B free)
+2024-05-27 11:48:05.825045 [guppy/message] Found 1 input read file to process.
+2024-05-27 11:48:05.834331 [guppy/info] Time to build read_file map was 9 ms.
+2024-05-27 11:48:05.843640 [guppy/info] lamp_arrangements arrangement folder not found: /opt/ont/guppy/data/barcoding/lamp_arrangements
+2024-05-27 11:48:05.991360 [guppy/info] Read '05f5c80b-592f-4e4c-9d4b-24549b3d297e' from file "NBD114_96_duplexReads.0_0.fast5" has been loaded.
+2024-05-27 11:48:05.991467 [guppy/info] Read '2f5c2fc1-1cb1-444a-9d54-76f9c78c2fd7' from file "NBD114_96_duplexReads.0_0.fast5" has been loaded.
+2024-05-27 11:48:05.991501 [guppy/info] Read 'fc7f7281-b19b-462c-acb0-c3508dab7051' from file "NBD114_96_duplexReads.0_0.fast5" has been loaded.
+2024-05-27 11:48:05.991524 [guppy/info] Read 'ea8173e6-d770-4eac-b04b-4af61840cabd' from file "NBD114_96_duplexReads.0_0.fast5" has been loaded.
+2024-05-27 11:48:05.991606 [guppy/info] Dispatched batch 0 containing 4 inputs:
+2024-05-27 11:48:05.991653 [guppy/info] Batch input 0 : .tests/integration/fast5/NBD114_96_duplexReads.0_0.fast5
+2024-05-27 11:48:05.991667 [guppy/info] Batch input 0 : .tests/integration/fast5/NBD114_96_duplexReads.0_0.fast5
+2024-05-27 11:48:05.991676 [guppy/info] Batch input 0 : .tests/integration/fast5/NBD114_96_duplexReads.0_0.fast5
+2024-05-27 11:48:05.991684 [guppy/info] Batch input 0 : .tests/integration/fast5/NBD114_96_duplexReads.0_0.fast5
+2024-05-27 11:48:05.991796 [guppy/message] Init time: 1792 ms
+2024-05-27 11:48:05.991830 [guppy/message] [PROG_STAT_HDR] time elapsed(secs), time remaining (estimate), total reads processed, total reads (estimate), interval(secs), interval reads processed, interval bases processed
+2024-05-27 11:48:06.849778 [guppy/info] Read '05f5c80b-592f-4e4c-9d4b-24549b3d297e' from file "NBD114_96_duplexReads.0_0.fast5" completed.
+2024-05-27 11:48:06.850203 [guppy/info] Read 'fc7f7281-b19b-462c-acb0-c3508dab7051' from file "NBD114_96_duplexReads.0_0.fast5" completed.
+2024-05-27 11:48:06.851624 [guppy/info] Completed batch 0
+2024-05-27 11:48:06.893879 [guppy/message] [PROG_STAT] 0.902046, 0, 2, 2, 0.902046, 2, 1393
+2024-05-27 11:48:06.893977 [guppy/message] Caller time: 902 ms, Samples called: 33761, samples/s: 37429
+2024-05-27 11:48:06.894006 [guppy/message] Finishing up any open output files.
+2024-05-27 11:48:07.282676 [guppy/info] Stats for model /opt/ont/guppy/data/template_r10.4.1_e8.2_400bps_5khz_hac.jsn, 4 runners/device, 400 chunks/run, 2000 blocks/chunk, lifetime 2.757 s
+CUDA device 0: 1 runs with 4 chunks (1%), 33736 samples (0.70283%), avg max size 10867, avg size 8434 (77.611% of max), 12236 samples/s
+CUDA device 1: 0 runs with 0 chunks (-nan%), 0 samples (-nan%), avg max size -nan, avg size -nan (-nan% of max), 0 samples/s
+2024-05-27 11:48:07.335647 [guppy/message] Basecalling completed successfully.

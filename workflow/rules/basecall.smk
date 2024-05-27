@@ -356,7 +356,7 @@ rule collectDorado:
 # collect all runs
 rule collectAll:
     input:
-        guppy=collect(rules.collectGuppy.output, run=get_guppyRuns) if "collectGuppy" in globals() else "",
-        dorado=collect(rules.collectDorado.output, run=get_doradoRuns)  if "collectDorado" in globals() else "",
+        guppy=collect(rules.collectGuppy.output, run=get_guppyRuns), # if "collectGuppy" in globals() else "",
+        dorado=collect(rules.collectDorado.output, run=get_doradoRuns), #  if "collectDorado" in globals() else "",
     output:
         flag=touch(os.path.join(INTERIMPATH, "flags", "{run}", "collectAll.flag")),

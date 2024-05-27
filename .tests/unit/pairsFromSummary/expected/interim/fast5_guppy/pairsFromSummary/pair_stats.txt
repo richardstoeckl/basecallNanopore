@@ -1,0 +1,3 @@
+read_id	channel	mux	start_time	duration	sequence_length_template	mean_qscore_template	barcode_arrangement	sequence_length_difference	mean_qscore_template_next	end_time	barcode_arrangement_next	fraction_missing_from_longest	duration_until_next_start	pair_id	strand
+fc7f7281-b19b-462c-acb0-c3508dab7051	4	2	819.7818	2.1748	845	12.693538	barcode21	5.0	11.785131	821.9566	barcode21	0.005917159763313609	0.026600000000030377	fc7f7281-b19b-462c-acb0-c3508dab7051 ea8173e6-d770-4eac-b04b-4af61840cabd	template
+ea8173e6-d770-4eac-b04b-4af61840cabd	4	2	821.9832	1.9692	840	11.785131	barcode21			823.9524				fc7f7281-b19b-462c-acb0-c3508dab7051 ea8173e6-d770-4eac-b04b-4af61840cabd	complement
