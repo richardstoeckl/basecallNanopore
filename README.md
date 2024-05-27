@@ -37,7 +37,7 @@ For Dorado, a pipeline based on [recommendations from Nanopore](https://github.c
 conda install -c conda-forge -c bioconda snakemake
 ```
 3. Install Guppy ([see these instructions](https://help.nanoporetech.com/en/articles/6628042-how-do-i-install-stand-alone-guppy)) and/or Dorado ([see these instructions](https://github.com/nanoporetech/dorado)), depending on what you want to use
-3. [Download this repo](https://github.com/richardstoeckl/basecallNanopore/archive/refs/heads/main.zip) and cd into it
+3. [Download the latest release from this repo](https://github.com/richardstoeckl/basecallNanopore/releases/latest) and cd into it
 4. Edit the `config/config.yaml` to provide the paths to your results/logs directories, and the paths to Dorado and/or Guppy, as well as any parameters you might want to change. You can test the setup by using the `config/runs_test.csv` sample sheet.
 5. Edit the `config/runs.csv` file with the specific details for each run. Depending on what you enter here, the pipeline will automatically adjust what will be done.
 5. Open a terminal in the main dir and start a dry-run of the pipeline with the following command. This will download and install all the dependencies for the pipeline (this step takes may take some time) and it will show you if you set up the paths correctly:
