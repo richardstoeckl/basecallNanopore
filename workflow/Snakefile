@@ -38,6 +38,6 @@ include: os.path.join(workflow.basedir, "rules", "basecall.smk")
 rule all:
     input:
         expand(
-            os.path.join(INTERIMPATH, "basecalling", "{run}", "collectAll.flag"),
+            os.path.join(INTERIMPATH, "flags", "{run}", "collectAll.flag"),
             run=RUNS,
         ),
